@@ -34,6 +34,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const doctorLinks = [
     { href: "/doctor/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/doctor/appointments", label: "My Appointments", icon: Calendar },
+    { href: "/doctor/profile", label: "My Profile", icon: Users },
   ];
 
   const links = isAdmin ? adminLinks : doctorLinks;
