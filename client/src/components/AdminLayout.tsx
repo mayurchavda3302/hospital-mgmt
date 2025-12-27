@@ -28,7 +28,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/doctors", label: "Doctors", icon: Stethoscope },
     { href: "/admin/appointments", label: "Appointments", icon: Calendar },
-    { href: "/admin/messages", label: "Messages", icon: MessageSquare },
+    { href: "/admin/requests", label: "Requests", icon: MessageSquare },
   ];
 
   const doctorLinks = [

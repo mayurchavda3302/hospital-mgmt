@@ -12,6 +12,7 @@ import AdminLogin from "@/pages/admin/Login";
 import AdminDashboard from "@/pages/admin/Dashboard";
 import AdminDoctors from "@/pages/admin/Doctors";
 import AdminAppointments from "@/pages/admin/Appointments";
+import AdminRequests from "@/pages/admin/Requests";
 import DoctorDashboard from "@/pages/doctor/Dashboard";
 import NotFound from "@/pages/not-found";
 
@@ -61,6 +62,9 @@ function Router() {
       </Route>
       <Route path="/admin/appointments">
         <ProtectedRoute component={AdminAppointments} role="admin" />
+      </Route>
+      <Route path="/admin/requests">
+        <ProtectedRoute component={AdminRequests} role="admin" />
       </Route>
 
       {/* Doctor Routes */}
