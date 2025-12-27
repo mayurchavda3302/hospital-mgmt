@@ -14,8 +14,8 @@ export default function AdminDashboard() {
   const activeDoctors = doctors?.length || 0;
   const completedAppts = appointments?.filter(a => a.status === 'completed').length || 0;
 
-  // Mock data for chart
-  const data = [
+  // Mock data for chart based on recent appointments trend
+  const chartData = [
     { name: 'Mon', visits: 40 },
     { name: 'Tue', visits: 30 },
     { name: 'Wed', visits: 45 },
@@ -39,7 +39,7 @@ export default function AdminDashboard() {
           { title: "Pending Requests", value: pendingAppts, icon: Activity, color: "text-orange-600", bg: "bg-orange-50" },
           { title: "Completed Visits", value: completedAppts, icon: TrendingUp, color: "text-green-600", bg: "bg-green-50" },
         ].map((stat, i) => (
-          <Card key={i} className="border-none shadow-sm hover:shadow-md transition-all">
+          <Card key={i} className="border-none shadow-sm hover-elevate transition-all">
             <CardContent className="p-6 flex items-center gap-4">
               <div className={`h-12 w-12 rounded-full flex items-center justify-center ${stat.bg} ${stat.color}`}>
                 <stat.icon className="h-6 w-6" />
@@ -61,12 +61,12 @@ export default function AdminDashboard() {
           <CardContent>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data}>
+                <BarChart data={chartData}>
                   <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                   <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                   <Tooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
                   <Bar dataKey="visits" radius={[4, 4, 0, 0]}>
-                    {data.map((entry, index) => (
+                    {chartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={index === 4 ? '#0f766e' : '#cbd5e1'} />
                     ))}
                   </Bar>

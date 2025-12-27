@@ -30,19 +30,19 @@ export default function DoctorDashboard() {
       </div>
 
       <div className="grid md:grid-cols-3 gap-6 mb-8">
-        <Card className="bg-primary text-white border-none shadow-lg shadow-primary/20">
+        <Card className="bg-primary text-white border-none shadow-lg shadow-primary/20 hover-elevate">
           <CardContent className="p-6">
             <h3 className="text-lg font-medium opacity-90">Today's Visits</h3>
             <p className="text-4xl font-bold mt-2">{todaysAppts?.length || 0}</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover-elevate">
           <CardContent className="p-6">
             <h3 className="text-lg font-medium text-slate-500">Pending</h3>
             <p className="text-4xl font-bold mt-2 text-slate-900">{pendingAppts?.length || 0}</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover-elevate">
           <CardContent className="p-6">
             <h3 className="text-lg font-medium text-slate-500">Total Patients</h3>
             <p className="text-4xl font-bold mt-2 text-slate-900">{appointments?.length || 0}</p>

@@ -169,13 +169,13 @@ export default function DoctorsPage() {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredDoctors?.map((doctor) => (
-          <Card key={doctor.id} className="group hover:shadow-lg transition-all border-slate-200">
+          <Card key={doctor.id} className="group hover-elevate transition-all border-slate-200">
             <CardContent className="p-6">
               <div className="flex justify-between items-start mb-4">
                 <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-lg">
                   {doctor.name[0]}
                 </div>
-                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-destructive" onClick={() => handleDelete(doctor.id)}>
+                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-destructive no-default-hover-elevate" onClick={() => handleDelete(doctor.id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
