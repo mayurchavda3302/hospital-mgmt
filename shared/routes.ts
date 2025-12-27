@@ -1,5 +1,21 @@
 import { z } from 'zod';
-import { insertUserSchema, insertDoctorSchema, insertAppointmentSchema, insertMessageSchema, users, doctors, appointments, messages } from './schema';
+import { 
+  insertUserSchema, 
+  insertDoctorSchema, 
+  insertAppointmentSchema, 
+  insertMessageSchema, 
+  users, 
+  doctors, 
+  appointments, 
+  messages,
+  type InsertAppointment,
+  type InsertMessage
+} from './schema';
+
+// Export types needed by hooks
+export type { InsertAppointment, InsertMessage };
+export type LoginRequest = z.infer<typeof api.auth.login.input>;
+export type CreateDoctorRequest = z.infer<typeof api.doctors.create.input>;
 
 export const errorSchemas = {
   validation: z.object({

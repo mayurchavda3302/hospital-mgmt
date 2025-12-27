@@ -32,7 +32,7 @@ export default function AdminRequests() {
             <TableBody>
               {isLoading ? (
                 <TableRow><TableCell colSpan={5} className="text-center py-8">Loading...</TableCell></TableRow>
-              ) : messages?.map((msg: any) => (
+              ) : (messages as any[])?.map((msg: any) => (
                 <TableRow key={msg.id}>
                   <TableCell className="font-medium">{msg.name}</TableCell>
                   <TableCell>{msg.email}</TableCell>
@@ -47,10 +47,8 @@ export default function AdminRequests() {
                   </TableCell>
                 </TableRow>
               ))}
-              {messages?.length === 0 && (
+              {((messages as any[])?.length === 0 || (!messages && !isLoading)) && (
                 <TableRow><TableCell colSpan={5} className="text-center py-8">No requests found</TableCell></TableRow>
-              ) || !messages && !isLoading && (
-                 <TableRow><TableCell colSpan={5} className="text-center py-8">No requests found</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
