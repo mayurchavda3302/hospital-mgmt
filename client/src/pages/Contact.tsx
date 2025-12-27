@@ -26,13 +26,13 @@ export default function Contact() {
       patientPhone: "",
       department: "General",
       message: "",
-      status: "pending",
     }
   });
 
   const onSubmit = (data: InsertAppointment) => {
     // Add current date if not selected (simple implementation)
-    const payload = { ...data, date: new Date() };
+    const { status, ...rest } = data as any;
+    const payload = { ...rest, date: new Date() };
     mutate(payload, {
       onSuccess: () => {
         toast({
