@@ -31,8 +31,12 @@ export default function Contact() {
 
   const onSubmit = (data: InsertAppointment) => {
     // Add current date if not selected (simple implementation)
-    const { status, ...rest } = data as any;
-    const payload = { ...rest, date: new Date() };
+    const { ...rest } = data as any;
+    const payload = { 
+      ...rest, 
+      date: new Date(),
+      doctorId: rest.doctorId === 0 ? null : rest.doctorId
+    };
     mutate(payload, {
       onSuccess: () => {
         toast({
@@ -109,6 +113,7 @@ export default function Contact() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {form.formState.errors.doctorId && <p className="text-xs text-red-500">{form.formState.errors.doctorId.message}</p>}
                 </div>
               </div>
 
