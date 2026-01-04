@@ -20,7 +20,7 @@ export default function DoctorDashboard() {
 
   const today = new Date().toDateString();
   const todaysAppts = appointments?.filter(a => new Date(a.date).toDateString() === today);
-  const pendingAppts = appointments?.filter(a => a.status === 'assigned' || a.status === 'pending');
+  const pendingAppts = appointments?.filter(a => a.status === 'assigned' || a.status === 'pending' || a.status === 'approved');
 
   return (
     <AdminLayout>

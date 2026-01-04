@@ -76,7 +76,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createAppointment(appointment: InsertAppointment): Promise<Appointment> {
-    const [newAppt] = await db.insert(appointments).values(appointment).returning();
+    const [newAppt] = await db.insert(appointments).values({
+      patientName: appointment.patientName,
+      patientPhone: appointment.patientPhone,
+      patientEmail: appointment.patientEmail,
+      department: appointment.department,
+      message: appointment.message || null,
+      date: new Date(String(appointment.date)),
+      doctorId: appointment.doctorId ? Number(appointment.doctorId) : null,
+    }).returning();
     return newAppt;
   }
 
@@ -92,9 +100,9 @@ export class DatabaseStorage implements IStorage {
     return appt;
   }
 
-  async updateAppointmentStatus(id: number, status: "pending" | "assigned" | "confirmed" | "completed" | "cancelled"): Promise<Appointment | undefined> {
+  async updateAppointmentStatus(id: number, status: string): Promise<Appointment | undefined> {
     const [updated] = await db.update(appointments)
-      .set({ status })
+      .set({ status: status as any })
       .where(eq(appointments.id, id))
       .returning();
     return updated;

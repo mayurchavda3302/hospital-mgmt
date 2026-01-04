@@ -35,7 +35,7 @@ export const appointments = pgTable("appointments", {
   date: timestamp("date").notNull(),
   department: text("department").notNull(),
   doctorId: integer("doctor_id").references(() => doctors.id),
-  status: text("status", { enum: ["pending", "assigned", "confirmed", "completed", "cancelled"] }).notNull().default("pending"),
+  status: text("status", { enum: ["pending", "assigned", "approved", "completed", "cancelled"] }).notNull().default("pending"),
   message: text("message"),
   createdAt: timestamp("created_at").defaultNow(),
 });
