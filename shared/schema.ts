@@ -70,11 +70,15 @@ export const appointmentsRelations = relations(appointments, ({ one }) => ({
 
 export const insertUserSchema = createInsertSchema(users).omit({ id: true });
 export const insertDoctorSchema = createInsertSchema(doctors).omit({ id: true });
-export const insertAppointmentSchema = createInsertSchema(appointments, {
-  patientEmail: z.string().email("Invalid email address"),
-  patientPhone: z.string().min(10, "Phone number must be at least 10 digits"),
+export const insertAppointmentSchema = z.object({
   patientName: z.string().min(2, "Name is too short"),
-}).omit({ id: true, createdAt: true, status: true });
+  patientPhone: z.string().min(10, "Phone number must be at least 10 digits"),
+  patientEmail: z.string().email("Invalid email address"),
+  department: z.string().min(1, "Department is required"),
+  date: z.string().or(z.date()),
+  message: z.string().optional().nullable(),
+  doctorId: z.number().optional().nullable(),
+});
 export const insertMessageSchema = createInsertSchema(messages).omit({ id: true, createdAt: true, status: true });
 
 // === TYPES ===

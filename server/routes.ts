@@ -150,8 +150,13 @@ export async function registerRoutes(
     try {
       const input = api.appointments.create.input.parse(req.body);
       const appt = await storage.createAppointment({
-        ...input,
+        patientName: input.patientName,
+        patientPhone: input.patientPhone,
+        patientEmail: input.patientEmail,
+        department: input.department,
+        message: input.message || null,
         date: new Date(input.date),
+        doctorId: input.doctorId || null,
       });
       res.status(201).json(appt);
     } catch (err) {

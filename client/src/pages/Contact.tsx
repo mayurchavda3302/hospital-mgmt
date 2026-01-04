@@ -30,14 +30,18 @@ export default function Contact() {
   });
 
   const onSubmit = (data: InsertAppointment) => {
-    // Add current date if not selected (simple implementation)
-    const { ...rest } = data as any;
     const payload = { 
-      ...rest, 
-      date: new Date(),
-      doctorId: rest.doctorId === 0 ? null : rest.doctorId
+      patientName: data.patientName,
+      patientPhone: data.patientPhone,
+      patientEmail: data.patientEmail,
+      department: data.department,
+      message: data.message,
+      date: new Date().toISOString(),
+      doctorId: data.doctorId && data.doctorId !== 0 ? data.doctorId : null
     };
-    mutate(payload, {
+    
+    console.log("Submitting appointment:", payload);
+    mutate(payload as any, {
       onSuccess: () => {
         toast({
           title: "Appointment Request Sent",
@@ -104,7 +108,7 @@ export default function Contact() {
                 </div>
                 <div className="space-y-2">
                   <Label>Preferred Doctor (Optional)</Label>
-                  <Select onValueChange={(val) => form.setValue("doctorId", parseInt(val))}>
+                  <Select onValueChange={(val) => form.setValue("doctorId", val === "0" ? null : parseInt(val))}>
                     <SelectTrigger><SelectValue placeholder="Any Doctor" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="0">Any Doctor</SelectItem>
