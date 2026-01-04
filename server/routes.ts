@@ -148,7 +148,7 @@ export async function registerRoutes(
   // === APPOINTMENT ROUTES ===
   app.post(api.appointments.create.path, async (req, res) => {
     try {
-      console.log("Received appointment request:", req.body);
+      console.log("Received appointment request:", JSON.stringify(req.body));
       const input = api.appointments.create.input.parse(req.body);
       const appt = await storage.createAppointment({
         patientName: input.patientName,
@@ -156,20 +156,23 @@ export async function registerRoutes(
         patientEmail: input.patientEmail,
         department: input.department,
         message: input.message || null,
-        date: input.date,
+        date: new Date(input.date),
         doctorId: input.doctorId || null,
       });
       console.log("Created appointment:", appt);
       res.status(201).json(appt);
     } catch (err) {
-      console.error("Appointment creation error:", err);
+      console.error("Appointment creation error detail:", err);
       if (err instanceof z.ZodError) {
         return res.status(400).json({
-          message: err.errors[0].message,
-          field: err.errors[0].path.join('.'),
+          message: "Validation failed",
+          errors: err.errors
         });
       }
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ 
+        message: "Internal server error",
+        error: err instanceof Error ? err.message : String(err)
+      });
     }
   });
 
