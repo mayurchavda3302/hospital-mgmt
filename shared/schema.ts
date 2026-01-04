@@ -75,7 +75,7 @@ export const insertAppointmentSchema = z.object({
   patientPhone: z.string().min(10, "Phone number must be at least 10 digits"),
   patientEmail: z.string().email("Invalid email address"),
   department: z.string().min(1, "Department is required"),
-  date: z.string().or(z.date()),
+  date: z.coerce.date(),
   message: z.string().optional().nullable(),
   doctorId: z.number().optional().nullable(),
 });

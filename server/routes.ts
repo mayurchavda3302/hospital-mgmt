@@ -156,7 +156,7 @@ export async function registerRoutes(
         patientEmail: input.patientEmail,
         department: input.department,
         message: input.message || null,
-        date: new Date(input.date),
+        date: input.date,
         doctorId: input.doctorId || null,
       });
       console.log("Created appointment:", appt);
