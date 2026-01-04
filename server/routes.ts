@@ -156,8 +156,8 @@ export async function registerRoutes(
         patientEmail: input.patientEmail,
         department: input.department,
         message: input.message || null,
-        date: new Date(input.date),
-        doctorId: input.doctorId || null,
+        date: new Date(String(input.date)),
+        doctorId: input.doctorId && String(input.doctorId) !== "0" ? Number(input.doctorId) : null,
       });
       console.log("Created appointment:", appt);
       res.status(201).json(appt);

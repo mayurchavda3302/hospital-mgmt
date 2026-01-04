@@ -18,26 +18,28 @@ export default function Contact() {
   const { mutate, isPending } = useCreateAppointment();
   const { data: doctors } = useDoctors();
 
-  const form = useForm<InsertAppointment>({
+  const form = useForm({
     resolver: zodResolver(insertAppointmentSchema),
     defaultValues: {
       patientName: "",
       patientEmail: "",
       patientPhone: "",
       department: "General",
+      date: new Date().toISOString().split('T')[0],
       message: "",
+      doctorId: "0"
     }
   });
 
-  const onSubmit = (data: InsertAppointment) => {
+  const onSubmit = (data: any) => {
     const payload = { 
       patientName: data.patientName,
       patientPhone: data.patientPhone,
       patientEmail: data.patientEmail,
       department: data.department,
       message: data.message || "",
-      date: new Date().toISOString(),
-      doctorId: data.doctorId && String(data.doctorId) !== "0" ? Number(data.doctorId) : null
+      date: String(data.date),
+      doctorId: data.doctorId && String(data.doctorId) !== "0" ? String(data.doctorId) : null
     };
     
     console.log("Submitting appointment payload:", payload);
@@ -108,7 +110,7 @@ export default function Contact() {
                 </div>
                 <div className="space-y-2">
                   <Label>Preferred Doctor (Optional)</Label>
-                  <Select onValueChange={(val) => form.setValue("doctorId", val === "0" ? null : parseInt(val))}>
+                  <Select onValueChange={(val) => form.setValue("doctorId", val === "0" ? "0" : val)} defaultValue={form.getValues("doctorId")}>
                     <SelectTrigger><SelectValue placeholder="Any Doctor" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="0">Any Doctor</SelectItem>
@@ -119,6 +121,12 @@ export default function Contact() {
                   </Select>
                   {form.formState.errors.doctorId && <p className="text-xs text-red-500">{form.formState.errors.doctorId.message}</p>}
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Appointment Date</Label>
+                <Input {...form.register("date")} type="date" />
+                {form.formState.errors.date && <p className="text-xs text-red-500">{form.formState.errors.date.message}</p>}
               </div>
 
               <div className="space-y-2">
