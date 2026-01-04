@@ -14,6 +14,7 @@ import AdminDoctors from "@/pages/admin/Doctors";
 import AdminAppointments from "@/pages/admin/Appointments";
 import AdminRequests from "@/pages/admin/Requests";
 import DoctorDashboard from "@/pages/doctor/Dashboard";
+import DoctorAppointments from "@/pages/doctor/Appointments";
 import DoctorProfile from "@/pages/doctor/Profile";
 import NotFound from "@/pages/not-found";
 
@@ -73,7 +74,7 @@ function Router() {
         <ProtectedRoute component={DoctorDashboard} role="doctor" />
       </Route>
       <Route path="/doctor/appointments">
-        <ProtectedRoute component={DoctorDashboard} role="doctor" />
+        <ProtectedRoute component={DoctorAppointments} role="doctor" />
       </Route>
       <Route path="/doctor/profile">
         <ProtectedRoute component={DoctorProfile} role="doctor" />
