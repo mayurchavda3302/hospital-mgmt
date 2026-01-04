@@ -148,6 +148,7 @@ export async function registerRoutes(
   // === APPOINTMENT ROUTES ===
   app.post(api.appointments.create.path, async (req, res) => {
     try {
+      console.log("Received appointment request:", req.body);
       const input = api.appointments.create.input.parse(req.body);
       const appt = await storage.createAppointment({
         patientName: input.patientName,
@@ -158,15 +159,17 @@ export async function registerRoutes(
         date: new Date(input.date),
         doctorId: input.doctorId || null,
       });
+      console.log("Created appointment:", appt);
       res.status(201).json(appt);
     } catch (err) {
+      console.error("Appointment creation error:", err);
       if (err instanceof z.ZodError) {
         return res.status(400).json({
           message: err.errors[0].message,
           field: err.errors[0].path.join('.'),
         });
       }
-      throw err;
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 

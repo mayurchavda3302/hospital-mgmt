@@ -35,12 +35,12 @@ export default function Contact() {
       patientPhone: data.patientPhone,
       patientEmail: data.patientEmail,
       department: data.department,
-      message: data.message,
+      message: data.message || "",
       date: new Date().toISOString(),
       doctorId: data.doctorId && data.doctorId !== 0 ? data.doctorId : null
     };
     
-    console.log("Submitting appointment:", payload);
+    console.log("Submitting appointment payload:", payload);
     mutate(payload as any, {
       onSuccess: () => {
         toast({
