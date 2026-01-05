@@ -6,10 +6,10 @@ import { motion } from "framer-motion";
 
 export default function Home() {
   const departments = [
-    { title: "Cardiology", desc: "Expert heart care and surgery", icon: Activity },
-    { title: "Neurology", desc: "Advanced brain & spine treatment", icon: Activity },
-    { title: "Pediatrics", desc: "Specialized care for children", icon: Users },
-    { title: "Orthopedics", desc: "Joint replacement & trauma care", icon: Activity },
+    { title: "Gynaecology & Obstetrics", desc: "Expert care for women's health and high-risk pregnancy", icon: Activity },
+    { title: "Test Tube Baby Center", desc: "Advanced IVF, ICSI, and IUI fertility treatments", icon: Activity },
+    { title: "Pediatrics & Neonatology", desc: "Specialized newborn and child healthcare services", icon: Users },
+    { title: "General Medicine & Surgery", desc: "Comprehensive surgical and medical diagnosis", icon: Activity },
   ];
 
   return (
@@ -32,11 +32,11 @@ export default function Home() {
                 #1 Hospital in the City
               </div>
               <h1 className="text-5xl lg:text-7xl font-display font-bold text-slate-900 leading-[1.1] mb-6">
-                Your Health, <br />
-                <span className="text-gradient">Our Priority.</span>
+                Siddhi Vinayak <br />
+                <span className="text-gradient">Hospital.</span>
               </h1>
               <p className="text-lg text-slate-600 mb-8 max-w-lg leading-relaxed">
-                Experience world-class healthcare with our team of expert doctors and state-of-the-art facilities. We are dedicated to providing compassionate care for you and your family.
+                A renowned Multi-Specialty Hospital in Jamnagar since 1985, providing professional and honest care in IVF, Gynaecology, and Pediatrics.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/contact">
@@ -99,9 +99,9 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { icon: Users, title: "Expert Doctors", text: "Board-certified specialists delivering top-notch care." },
-              { icon: Clock, title: "24/7 Emergency", text: "Round-the-clock emergency services for critical care." },
-              { icon: Award, title: "Modern Technology", text: "State-of-the-art diagnostic and treatment facilities." },
+              { icon: Users, title: "30+ Years Experience", text: "Trusted healthcare provider in Jamnagar since 1985." },
+              { icon: Clock, title: "24/7 Care", text: "Round-the-clock neonatal and emergency medical services." },
+              { icon: Award, title: "Advanced IVF", text: "State-of-the-art Test Tube Baby Center with high success rates." },
             ].map((feature, i) => (
               <div key={i} className="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div className="h-14 w-14 bg-white rounded-xl shadow-sm flex items-center justify-center text-primary mb-6">

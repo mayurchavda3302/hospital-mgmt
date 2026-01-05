@@ -101,10 +101,10 @@ export default function Contact() {
                   <Select onValueChange={(val) => form.setValue("department", val)} defaultValue={form.getValues("department")}>
                     <SelectTrigger><SelectValue placeholder="Select Department" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="General">General Medicine</SelectItem>
-                      <SelectItem value="Cardiology">Cardiology</SelectItem>
-                      <SelectItem value="Neurology">Neurology</SelectItem>
-                      <SelectItem value="Pediatrics">Pediatrics</SelectItem>
+                      <SelectItem value="Gynaecology">Gynaecology & Obstetrics</SelectItem>
+                      <SelectItem value="IVF">Test Tube Baby Center</SelectItem>
+                      <SelectItem value="Pediatrics">Pediatrics & Neonatology</SelectItem>
+                      <SelectItem value="Medicine">General Medicine & Surgery</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -145,10 +145,10 @@ export default function Contact() {
             <h2 className="text-2xl font-bold font-display mb-6">Get in Touch</h2>
             <div className="grid gap-6">
               {[
-                { icon: Phone, title: "Phone Support", desc: "24/7 Emergency", detail: "+1 (555) 123-4567" },
-                { icon: Mail, title: "Email Us", desc: "For general inquiries", detail: "contact@medicare.com" },
-                { icon: MapPin, title: "Location", desc: "Main Campus", detail: "123 Healthcare Ave, Medical City, NY 10001" },
-                { icon: Clock, title: "Working Hours", desc: "Emergency is 24/7", detail: "Mon - Fri: 8:00 AM - 9:00 PM" },
+                { icon: Phone, title: "Phone Support", desc: "24/7 Emergency", detail: "+91 288-2510017" },
+                { icon: Mail, title: "Email Us", desc: "For general inquiries", detail: "info@svhospitals.in" },
+                { icon: MapPin, title: "Location", desc: "Jamnagar", detail: "Siddhi Vinayak Hospital, Jamnagar, Gujarat" },
+                { icon: Clock, title: "Working Hours", desc: "Emergency is 24/7", detail: "Mon - Sat: 8:00 AM - 9:00 PM" },
               ].map((item, i) => (
                 <Card key={i} className="p-6 flex items-start gap-4 hover:shadow-md transition-all">
                   <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary shrink-0">
