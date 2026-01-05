@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useAppointments, useUpdateAppointmentStatus } from "@/hooks/use-appointments";
-import { Calendar, CheckCircle, XCircle } from "lucide-react";
+import { Calendar, CheckCircle, XCircle, Phone, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { useDoctors } from "@/hooks/use-doctors";
 
@@ -52,7 +52,7 @@ export default function DoctorDashboard() {
 
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Today's Schedule</h2>
-        <Button variant="link" onClick={() => window.location.href='/doctor/appointments'}>View All Appointments</Button>
+        <Button variant="ghost" className="text-primary hover:text-primary/80" onClick={() => window.location.href='/doctor/appointments'}>View All Appointments</Button>
       </div>
       <div className="space-y-4">
         {todaysAppts?.map((apt) => (
