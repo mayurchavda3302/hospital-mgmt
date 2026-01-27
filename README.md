@@ -40,4 +40,5 @@ The application will be available at `http://localhost:5000`.
 
 ### 6. Default Credentials
 - **Admin**: `admin` / `admin123`
-- **Doctor**: `dr.smith` / `doctor123`
+- **Doctor**: `dr.gayatri` / `doctor123`
+- **Doctor**: `dr.suresh` / `doctor123`

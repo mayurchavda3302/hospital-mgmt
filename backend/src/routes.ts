@@ -30,7 +30,7 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // === AUTH SETUP ===
+  
   app.use(
     session({
       secret: process.env.SESSION_SECRET || "super_secret_session_key",
@@ -245,9 +245,6 @@ export async function registerRoutes(
     });
     console.log("Seeded admin user");
 
-    // Seed some doctors
-
-    // Dr. Gayatri Thaker
     const docPass = await hashPassword("doctor123");
     let docUser1 = await storage.getUserByUsername("dr.gayatri");
     if (!docUser1) {
@@ -271,7 +268,6 @@ export async function registerRoutes(
       console.log("Seeded Dr. Gayatri Thaker");
     }
 
-    // Dr. Suresh Thaker
     let docUser2 = await storage.getUserByUsername("dr.suresh");
     if (!docUser2) {
       docUser2 = await storage.createUser({
