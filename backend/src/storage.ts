@@ -1,10 +1,13 @@
 import { db } from "./db";
-import { 
-  users, doctors, appointments, messages,
-  type User, type InsertUser, 
+import {
+  users, doctors, appointments, messages, pharmacies, medicines, medicineRequests,
+  type User, type InsertUser,
   type Doctor, type InsertDoctor,
   type Appointment, type InsertAppointment,
-  type Message, type InsertMessage
+  type Message, type InsertMessage,
+  type Pharmacy, type InsertPharmacy,
+  type Medicine, type InsertMedicine,
+  type MedicineRequest, type InsertMedicineRequest
 } from "@shared/schema";
 import { eq, and, desc } from "drizzle-orm";
 
@@ -31,6 +34,21 @@ export interface IStorage {
   // Messages
   createMessage(message: InsertMessage): Promise<Message>;
   getMessages(): Promise<Message[]>;
+
+  // Pharmacy
+  createPharmacy(pharmacy: InsertPharmacy): Promise<Pharmacy>;
+  getPharmacies(): Promise<Pharmacy[]>;
+  getPharmacy(id: number): Promise<Pharmacy | undefined>;
+
+  // Medicine
+  createMedicine(medicine: InsertMedicine): Promise<Medicine>;
+  getMedicines(pharmacyId: number): Promise<Medicine[]>;
+  getMedicine(id: number): Promise<Medicine | undefined>;
+
+  // Medicine Requests
+  createMedicineRequest(request: InsertMedicineRequest): Promise<MedicineRequest>;
+  getMedicineRequests(): Promise<MedicineRequest[]>;
+  updateMedicineRequestStatus(id: number, status: string): Promise<MedicineRequest | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -123,6 +141,54 @@ export class DatabaseStorage implements IStorage {
 
   async getMessages(): Promise<Message[]> {
     return await db.select().from(messages).orderBy(desc(messages.createdAt));
+  }
+
+  // Pharmacy
+  async createPharmacy(pharmacy: InsertPharmacy): Promise<Pharmacy> {
+    const [newPharmacy] = await db.insert(pharmacies).values(pharmacy).returning();
+    return newPharmacy;
+  }
+
+  async getPharmacies(): Promise<Pharmacy[]> {
+    return await db.select().from(pharmacies);
+  }
+
+  async getPharmacy(id: number): Promise<Pharmacy | undefined> {
+    const [pharmacy] = await db.select().from(pharmacies).where(eq(pharmacies.id, id));
+    return pharmacy;
+  }
+
+  // Medicine
+  async createMedicine(medicine: InsertMedicine): Promise<Medicine> {
+    const [newMedicine] = await db.insert(medicines).values(medicine).returning();
+    return newMedicine;
+  }
+
+  async getMedicines(pharmacyId: number): Promise<Medicine[]> {
+    return await db.select().from(medicines).where(eq(medicines.pharmacyId, pharmacyId));
+  }
+
+  async getMedicine(id: number): Promise<Medicine | undefined> {
+    const [medicine] = await db.select().from(medicines).where(eq(medicines.id, id));
+    return medicine;
+  }
+
+  // Medicine Requests
+  async createMedicineRequest(request: InsertMedicineRequest): Promise<MedicineRequest> {
+    const [newRequest] = await db.insert(medicineRequests).values(request).returning();
+    return newRequest;
+  }
+
+  async getMedicineRequests(): Promise<MedicineRequest[]> {
+    return await db.select().from(medicineRequests).orderBy(desc(medicineRequests.createdAt));
+  }
+
+  async updateMedicineRequestStatus(id: number, status: string): Promise<MedicineRequest | undefined> {
+    const [updated] = await db.update(medicineRequests)
+      .set({ status: status as any })
+      .where(eq(medicineRequests.id, id))
+      .returning();
+    return updated;
   }
 }
 

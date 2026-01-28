@@ -16,15 +16,18 @@ import AdminRequests from "@/pages/admin/Requests";
 import DoctorDashboard from "@/pages/doctor/Dashboard";
 import DoctorAppointments from "@/pages/doctor/Appointments";
 import DoctorProfile from "@/pages/doctor/Profile";
+import PharmacyList from "@/pages/pharmacy/PharmacyList";
+import PharmacyDetails from "@/pages/pharmacy/PharmacyDetails";
+import AdminPharmacy from "@/pages/admin/Pharmacy";
 import NotFound from "@/pages/not-found";
 
 // Protected Route Wrapper
-function ProtectedRoute({ 
-  component: Component, 
-  role 
-}: { 
-  component: React.ComponentType, 
-  role: "admin" | "doctor" 
+function ProtectedRoute({
+  component: Component,
+  role
+}: {
+  component: React.ComponentType,
+  role: "admin" | "doctor"
 }) {
   const { user, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
@@ -51,6 +54,8 @@ function Router() {
       <Route path="/departments" component={Home} /> {/* Reuse Home for now or add page */}
       <Route path="/about" component={Home} />
       <Route path="/contact" component={Contact} />
+      <Route path="/pharmacy" component={PharmacyList} />
+      <Route path="/pharmacy/:id" component={PharmacyDetails} />
 
       {/* Auth Routes */}
       <Route path="/admin/login" component={AdminLogin} />
@@ -67,6 +72,9 @@ function Router() {
       </Route>
       <Route path="/admin/requests">
         <ProtectedRoute component={AdminRequests} role="admin" />
+      </Route>
+      <Route path="/admin/pharmacy">
+        <ProtectedRoute component={AdminPharmacy} role="admin" />
       </Route>
 
       {/* Doctor Routes */}

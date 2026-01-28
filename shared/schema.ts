@@ -49,6 +49,39 @@ export const messages = pgTable("messages", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const pharmacies = pgTable("pharmacies", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  location: text("location").notNull(),
+  contact: text("contact").notNull(),
+  image: text("image"),
+  description: text("description").notNull(),
+  isAvailable: boolean("is_available").default(true),
+});
+
+export const medicines = pgTable("medicines", {
+  id: serial("id").primaryKey(),
+  pharmacyId: integer("pharmacy_id").notNull().references(() => pharmacies.id),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  price: text("price").notNull(),
+  stock: integer("stock").notNull().default(0),
+  image: text("image"),
+  requiresPrescription: boolean("requires_prescription").default(false),
+});
+
+export const medicineRequests = pgTable("medicine_requests", {
+  id: serial("id").primaryKey(),
+  pharmacyId: integer("pharmacy_id").notNull().references(() => pharmacies.id),
+  medicineId: integer("medicine_id").notNull().references(() => medicines.id),
+  customerName: text("customer_name").notNull(),
+  customerPhone: text("customer_phone").notNull(),
+  customerAddress: text("customer_address").notNull(),
+  status: text("status", { enum: ["pending", "approved", "rejected", "completed"] }).default("pending"),
+  paymentStatus: text("payment_status", { enum: ["pending", "paid", "failed"] }).default("pending"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // === RELATIONS ===
 
 export const doctorsRelations = relations(doctors, ({ one, many }) => ({
@@ -66,6 +99,30 @@ export const appointmentsRelations = relations(appointments, ({ one }) => ({
   }),
 }));
 
+export const medicinesRelations = relations(medicines, ({ one, many }) => ({
+  pharmacy: one(pharmacies, {
+    fields: [medicines.pharmacyId],
+    references: [pharmacies.id],
+  }),
+  requests: many(medicineRequests),
+}));
+
+export const medicineRequestsRelations = relations(medicineRequests, ({ one }) => ({
+  medicine: one(medicines, {
+    fields: [medicineRequests.medicineId],
+    references: [medicines.id],
+  }),
+  pharmacy: one(pharmacies, {
+    fields: [medicineRequests.pharmacyId],
+    references: [pharmacies.id],
+  }),
+}));
+
+export const pharmaciesRelations = relations(pharmacies, ({ many }) => ({
+  medicines: many(medicines),
+  requests: many(medicineRequests),
+}));
+
 // === SCHEMAS ===
 
 export const insertUserSchema = createInsertSchema(users).omit({ id: true });
@@ -81,6 +138,15 @@ export const insertAppointmentSchema = z.object({
 });
 export const insertMessageSchema = createInsertSchema(messages).omit({ id: true, createdAt: true, status: true });
 
+export const insertPharmacySchema = createInsertSchema(pharmacies).omit({ id: true });
+export const insertMedicineSchema = createInsertSchema(medicines).omit({ id: true });
+export const insertMedicineRequestSchema = createInsertSchema(medicineRequests).omit({
+  id: true,
+  createdAt: true,
+  status: true,
+  paymentStatus: true
+});
+
 // === TYPES ===
 
 export type User = typeof users.$inferSelect;
@@ -94,6 +160,15 @@ export type InsertAppointment = z.infer<typeof insertAppointmentSchema>;
 
 export type Message = typeof messages.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
+
+export type Pharmacy = typeof pharmacies.$inferSelect;
+export type InsertPharmacy = z.infer<typeof insertPharmacySchema>;
+
+export type Medicine = typeof medicines.$inferSelect;
+export type InsertMedicine = z.infer<typeof insertMedicineSchema>;
+
+export type MedicineRequest = typeof medicineRequests.$inferSelect;
+export type InsertMedicineRequest = z.infer<typeof insertMedicineRequestSchema>;
 
 // Request Types
 export type LoginRequest = { username: string; password: string };

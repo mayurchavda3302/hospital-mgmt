@@ -12,7 +12,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
     { href: "/", label: "Home" },
     { href: "/doctors", label: "Doctors" },
     { href: "/departments", label: "Departments" },
-    { href: "/about", label: "About Us" },
+    { href: "/pharmacy", label: "Pharmacy" },
     { href: "/contact", label: "Contact" },
   ];
 

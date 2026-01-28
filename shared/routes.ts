@@ -1,19 +1,28 @@
 import { z } from 'zod';
-import { 
-  insertUserSchema, 
-  insertDoctorSchema, 
-  insertAppointmentSchema, 
-  insertMessageSchema, 
-  users, 
-  doctors, 
-  appointments, 
+import {
+  insertUserSchema,
+  insertDoctorSchema,
+  insertAppointmentSchema,
+  insertMessageSchema,
+  users,
+  doctors,
+  appointments,
   messages,
+  pharmacies,
+  medicines,
+  medicineRequests,
   type InsertAppointment,
-  type InsertMessage
+  type InsertMessage,
+  type InsertPharmacy,
+  type InsertMedicine,
+  type InsertMedicineRequest,
+  insertPharmacySchema,
+  insertMedicineSchema,
+  insertMedicineRequestSchema
 } from './schema';
 
 // Export types needed by hooks
-export type { InsertAppointment, InsertMessage };
+export type { InsertAppointment, InsertMessage, InsertPharmacy, InsertMedicine, InsertMedicineRequest };
 export type LoginRequest = z.infer<typeof api.auth.login.input>;
 export type CreateDoctorRequest = z.infer<typeof api.doctors.create.input>;
 
@@ -153,6 +162,77 @@ export const api = {
       path: '/api/contact',
       responses: {
         200: z.array(z.custom<typeof messages.$inferSelect>()),
+      },
+    },
+  },
+  pharmacies: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/pharmacies',
+      responses: {
+        200: z.array(z.custom<typeof pharmacies.$inferSelect>()),
+      },
+    },
+    get: {
+      method: 'GET' as const,
+      path: '/api/pharmacies/:id',
+      responses: {
+        200: z.custom<typeof pharmacies.$inferSelect>(),
+        404: errorSchemas.notFound,
+      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/pharmacies',
+      input: insertPharmacySchema,
+      responses: {
+        201: z.custom<typeof pharmacies.$inferSelect>(),
+        400: errorSchemas.validation,
+      },
+    },
+  },
+  medicines: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/pharmacies/:id/medicines',
+      responses: {
+        200: z.array(z.custom<typeof medicines.$inferSelect>()),
+      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/pharmacies/:id/medicines',
+      input: insertMedicineSchema.omit({ pharmacyId: true }),
+      responses: {
+        201: z.custom<typeof medicines.$inferSelect>(),
+        400: errorSchemas.validation,
+      },
+    },
+  },
+  medicineRequests: {
+    create: {
+      method: 'POST' as const,
+      path: '/api/medicine-requests',
+      input: insertMedicineRequestSchema,
+      responses: {
+        201: z.custom<typeof medicineRequests.$inferSelect>(),
+        400: errorSchemas.validation,
+      },
+    },
+    list: {
+      method: 'GET' as const,
+      path: '/api/medicine-requests',
+      responses: {
+        200: z.array(z.custom<typeof medicineRequests.$inferSelect>()),
+      },
+    },
+    updateStatus: {
+      method: 'PATCH' as const,
+      path: '/api/medicine-requests/:id/status',
+      input: z.object({ status: z.string() }),
+      responses: {
+        200: z.custom<typeof medicineRequests.$inferSelect>(),
+        404: errorSchemas.notFound,
       },
     },
   },

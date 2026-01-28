@@ -30,7 +30,7 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  
+
   app.use(
     session({
       secret: process.env.SESSION_SECRET || "super_secret_session_key",
@@ -233,7 +233,84 @@ export async function registerRoutes(
     res.json(msgs);
   });
 
-  // === SEED DATA ===
+  // === PHARMACY ROUTES ===
+  app.get(api.pharmacies.list.path, async (req, res) => {
+    const pharmacies = await storage.getPharmacies();
+    res.json(pharmacies);
+  });
+
+  app.get(api.pharmacies.get.path, async (req, res) => {
+    const pharmacy = await storage.getPharmacy(Number(req.params.id));
+    if (!pharmacy) return res.status(404).json({ message: "Pharmacy not found" });
+    res.json(pharmacy);
+  });
+
+  app.post(api.pharmacies.create.path, async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+      const input = api.pharmacies.create.input.parse(req.body);
+      const pharmacy = await storage.createPharmacy(input);
+      res.status(201).json(pharmacy);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json(err);
+      throw err;
+    }
+  });
+
+  // === MEDICINE ROUTES ===
+  app.get(api.medicines.list.path, async (req, res) => {
+    const medicines = await storage.getMedicines(Number(req.params.id));
+    res.json(medicines);
+  });
+
+  app.post(api.medicines.create.path, async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+      const input = api.medicines.create.input.parse(req.body);
+      const medicine = await storage.createMedicine({
+        ...input,
+        pharmacyId: Number(req.params.id)
+      });
+      res.status(201).json(medicine);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json(err);
+      throw err;
+    }
+  });
+
+  // === MEDICINE REQUEST ROUTES ===
+  app.post(api.medicineRequests.create.path, async (req, res) => {
+    try {
+      const input = api.medicineRequests.create.input.parse(req.body);
+      const request = await storage.createMedicineRequest(input);
+      res.status(201).json(request);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json(err);
+      throw err;
+    }
+  });
+
+  app.get(api.medicineRequests.list.path, async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const requests = await storage.getMedicineRequests();
+    res.json(requests);
+  });
+
+  app.patch(api.medicineRequests.updateStatus.path, async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const { status } = req.body;
+    const updated = await storage.updateMedicineRequestStatus(Number(req.params.id), status);
+    if (!updated) return res.status(404).json({ message: "Request not found" });
+    res.json(updated);
+  });
   const existingUsers = await storage.getUserByUsername("admin");
   if (!existingUsers) {
     const hashedPassword = await hashPassword("admin123");

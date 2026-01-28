@@ -9,7 +9,8 @@ import {
   LogOut,
   Stethoscope,
   Menu,
-  X
+  X,
+  Pill
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
@@ -29,6 +30,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     { href: "/admin/doctors", label: "Doctors", icon: Stethoscope },
     { href: "/admin/appointments", label: "Appointments", icon: Calendar },
     { href: "/admin/requests", label: "Requests", icon: MessageSquare },
+    { href: "/admin/pharmacy", label: "Pharmacy Management", icon: Pill },
   ];
 
   const doctorLinks = [
