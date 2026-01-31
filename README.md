@@ -1,3 +1,8 @@
+for run the project 
+npm run dev
+
+
+
 # Hospital Management System
 
 This is a full-stack Hospital Management System built with React, Express, and PostgreSQL.
