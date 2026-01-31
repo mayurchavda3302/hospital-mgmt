@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:frontend": "cd frontend && vite",
-    "dev:backend": "NODE_ENV=development tsx backend/src/index.ts",
+    "dev:backend": "tsx backend/src/index.ts",
     "build": "tsx script/build.ts",
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
