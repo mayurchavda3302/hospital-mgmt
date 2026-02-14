@@ -5,3 +5,6 @@ backend/public
 vite.config.ts.*
 *.tar.gz
 .env
+# database
+*.db
+!backend/sqlite.db
