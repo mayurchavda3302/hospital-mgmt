@@ -43,6 +43,36 @@ npm run dev
 
 The application will be available at `http://localhost:5000`.
 
+## SQLite Setup (Alternative to PostgreSQL)
+
+If you prefer to use SQLite (e.g., for simpler local development or portability), follow these steps instead of the PostgreSQL setup:
+
+### 1. Install Dependencies
+```bash
+npm install
+```
+
+### 2. Configure Environment
+Create a `.env` file (you can copy `.env.example`).
+**IMPORTANT:** Ensure `DATABASE_URL` is **NOT** set (or is empty) in your `.env` file. The application defaults to SQLite when this variable is missing.
+
+### 3. Initialize SQLite Database
+Run the migration script to create and setup the `sqlite.db` file:
+```bash
+npm run db:push:sqlite
+```
+This will create `backend/sqlite.db`.
+
+### 4. Start the Application
+```bash
+# Ensure DATABASE_URL is unset
+unset DATABASE_URL 
+
+npm run dev
+```
+
+The application will start using the SQLite database. Default credentials (admin/admin123) and doctor accounts will be seeded automatically.
+
 ### 6. Default Credentials & Seeding
 On the first run, the system automatically creates the following default accounts if they don't exist:
 
