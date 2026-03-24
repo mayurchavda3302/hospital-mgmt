@@ -17,10 +17,10 @@ export default function Doctors() {
   const getDoctorImage = (idx: number) => {
     // Array of doctor images from Unsplash
     const images = [
-      "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=500&q=80",
-      "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=500&q=80",
-      "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=500&q=80",
-      "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=500&q=80",
+      "/images/image_12.jpg",
+      "/images/image_13.jpg",
+      "/images/image_14.jpg",
+      "/images/image_15.jpg",
     ];
     return images[idx % images.length];
   };

@@ -80,7 +80,7 @@ export default function Home() {
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white/50">
                 {/* Doctor team image */}
                 <img
-                  src="https://images.unsplash.com/photo-1638202993928-7267aad84c31?w=800&q=80"
+                  src="/images/image_11.jpg"
                   alt="Medical Team"
                   className="w-full object-cover h-[500px]"
                 />
@@ -152,9 +152,9 @@ export default function Home() {
                 </div>
                 <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors">{dept.title}</h3>
                 <p className="text-sm text-slate-500 mb-4">{dept.desc}</p>
-                <span className="text-xs font-semibold text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
+                {/* <span className="text-xs font-semibold text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
                   Learn More <ArrowRight className="h-3 w-3" />
-                </span>
+                </span> */}
               </div>
             ))}
           </div>
