@@ -1,14 +1,24 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
+import * as schema from "@shared/schema";
 import { storage } from "./storage";
-import { api } from "@shared/routes";
-import { z } from "zod";
+import { eq, desc } from "drizzle-orm";
+import express from "express";
 import session from "express-session";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import MemoryStore from "memorystore";
+import { z } from "zod";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const scryptAsync = promisify(scrypt);
 const SessionStore = MemoryStore(session);
@@ -69,7 +79,7 @@ export async function registerRoutes(
   });
 
   // === AUTH ROUTES ===
-  app.post(api.auth.login.path, (req, res, next) => {
+  app.post("/api/auth/login", (req, res, next) => {
     passport.authenticate("local", (err: any, user: any, info: any) => {
       if (err) return next(err);
       if (!user) return res.status(401).json({ message: "Invalid credentials" });
@@ -80,53 +90,40 @@ export async function registerRoutes(
     })(req, res, next);
   });
 
-  app.post(api.auth.logout.path, (req, res) => {
+  app.post("/api/auth/logout", (req, res) => {
     req.logout(() => {
       res.json({ message: "Logged out" });
     });
   });
 
-  app.get(api.auth.me.path, (req, res) => {
+  app.get("/api/auth/me", (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Not logged in" });
     res.json(req.user);
   });
 
   // === DOCTOR ROUTES ===
-  app.get(api.doctors.list.path, async (req, res) => {
+  app.get("/api/doctors", async (req, res) => {
     const department = req.query.department as string | undefined;
     const doctors = await storage.getDoctors(department);
     res.json(doctors);
   });
 
-  app.get(api.doctors.get.path, async (req, res) => {
+  app.get("/api/doctors/:id", async (req, res) => {
     const doctor = await storage.getDoctor(Number(req.params.id));
     if (!doctor) return res.status(404).json({ message: "Doctor not found" });
     res.json(doctor);
   });
 
-  app.post(api.doctors.create.path, async (req, res) => {
+  app.post("/api/doctors", async (req, res) => {
     if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
       return res.status(401).json({ message: "Unauthorized" });
     }
     try {
-      const input = api.doctors.create.input.parse(req.body);
-      const hashedPassword = await hashPassword(input.password);
-
-      const user = await storage.createUser({
-        username: input.username,
-        password: hashedPassword,
-        role: "doctor",
-        name: input.name
-      });
-
-      const doctor = await storage.createDoctor({
-        ...input.doctorProfile,
-        userId: user.id,
-        name: input.name
-      });
-
+      const input = req.body;
+      const doctor = await storage.createDoctor(input);
       res.status(201).json(doctor);
     } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json(err);
       if (err instanceof z.ZodError) {
         return res.status(400).json({
           message: err.errors[0].message,
@@ -137,7 +134,7 @@ export async function registerRoutes(
     }
   });
 
-  app.delete(api.doctors.delete.path, async (req, res) => {
+  app.delete("/api/doctors/:id", async (req, res) => {
     if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -146,10 +143,10 @@ export async function registerRoutes(
   });
 
   // === APPOINTMENT ROUTES ===
-  app.post(api.appointments.create.path, async (req, res) => {
+  app.post("/api/appointments", async (req, res) => {
     try {
       console.log("Received appointment request:", JSON.stringify(req.body));
-      const input = api.appointments.create.input.parse(req.body);
+      const input = req.body;
       const appt = await storage.createAppointment({
         patientName: input.patientName,
         patientPhone: input.patientPhone,
@@ -176,7 +173,7 @@ export async function registerRoutes(
     }
   });
 
-  app.get(api.appointments.list.path, async (req, res) => {
+  app.get("/api/appointments", async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
 
     // If doctor, only show their appointments (or if admin, show all or filter)
@@ -194,7 +191,7 @@ export async function registerRoutes(
     res.json(appts);
   });
 
-  app.patch(api.appointments.updateStatus.path, async (req, res) => {
+  app.patch("/api/appointments/:id/status", async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
 
     const { status } = req.body;
@@ -203,7 +200,7 @@ export async function registerRoutes(
     res.json(updated);
   });
 
-  app.patch(api.appointments.assign.path, async (req, res) => {
+  app.patch("/api/appointments/:id/assign-doctor", async (req, res) => {
     if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -214,9 +211,9 @@ export async function registerRoutes(
   });
 
   // === CONTACT ROUTES ===
-  app.post(api.contact.create.path, async (req, res) => {
+  app.post("/api/messages", async (req, res) => {
     try {
-      const input = api.contact.create.input.parse(req.body);
+      const input = req.body;
       const msg = await storage.createMessage(input);
       res.status(201).json(msg);
     } catch (err) {
@@ -225,7 +222,7 @@ export async function registerRoutes(
     }
   });
 
-  app.get(api.contact.list.path, async (req, res) => {
+  app.get("/api/messages", async (req, res) => {
     if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -234,43 +231,74 @@ export async function registerRoutes(
   });
 
   // === PHARMACY ROUTES ===
-  app.get(api.pharmacies.list.path, async (req, res) => {
+  app.get("/api/pharmacies", async (req, res) => {
     const pharmacies = await storage.getPharmacies();
     res.json(pharmacies);
   });
 
-  app.get(api.pharmacies.get.path, async (req, res) => {
-    const pharmacy = await storage.getPharmacy(Number(req.params.id));
-    if (!pharmacy) return res.status(404).json({ message: "Pharmacy not found" });
-    res.json(pharmacy);
-  });
-
-  app.post(api.pharmacies.create.path, async (req, res) => {
+  app.post("/api/pharmacies", async (req, res) => {
     if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
       return res.status(401).json({ message: "Unauthorized" });
     }
     try {
-      const input = api.pharmacies.create.input.parse(req.body);
+      console.log("Pharmacy creation request:", req.body);
+      const input = req.body;
       const pharmacy = await storage.createPharmacy(input);
+      console.log("Pharmacy created successfully:", pharmacy);
       res.status(201).json(pharmacy);
     } catch (err) {
-      if (err instanceof z.ZodError) return res.status(400).json(err);
-      throw err;
+      console.error("Pharmacy creation error:", err);
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: err.errors 
+        });
+      }
+      res.status(500).json({ 
+        message: "Failed to create pharmacy: " + (err as Error).message 
+      });
+    }
+  });
+
+  app.delete("/api/pharmacies/:id", async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+      await storage.deletePharmacy(Number(req.params.id));
+      res.status(204).send();
+    } catch (err) {
+      console.error("Pharmacy deletion error:", err);
+      res.status(500).json({ 
+        message: "Failed to delete pharmacy: " + (err as Error).message 
+      });
     }
   });
 
   // === MEDICINE ROUTES ===
-  app.get(api.medicines.list.path, async (req, res) => {
+  app.get("/api/pharmacies/:id/medicines", async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
     const medicines = await storage.getMedicines(Number(req.params.id));
     res.json(medicines);
   });
 
-  app.post(api.medicines.create.path, async (req, res) => {
+  app.get("/api/medicines/:id", async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const medicine = await storage.getMedicine(Number(req.params.id));
+    if (!medicine) return res.status(404).json({ message: "Medicine not found" });
+    res.json(medicine);
+  });
+
+  app.post("/api/pharmacies/:id/medicines", async (req, res) => {
     if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
       return res.status(401).json({ message: "Unauthorized" });
     }
     try {
-      const input = api.medicines.create.input.parse(req.body);
+      const input = req.body;
       const medicine = await storage.createMedicine({
         ...input,
         pharmacyId: Number(req.params.id)
@@ -282,10 +310,54 @@ export async function registerRoutes(
     }
   });
 
-  // === MEDICINE REQUEST ROUTES ===
-  app.post(api.medicineRequests.create.path, async (req, res) => {
+  // === FILE UPLOAD ROUTE ===
+  const upload = multer({ 
+    dest: 'uploads/',
+    limits: {
+      fileSize: 5 * 1024 * 1024 // 5MB limit
+    }
+  });
+
+  app.post('/api/upload', upload.single('file'), async (req, res) => {
     try {
-      const input = api.medicineRequests.create.input.parse(req.body);
+      console.log('Upload request received:', req.file, req.body);
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "No file provided" });
+      }
+      
+      // Generate unique filename
+      const fileExtension = path.extname(req.file.originalname);
+      const fileName = `pharmacy-${Date.now()}${fileExtension}`;
+      const targetPath = path.join(__dirname, '../../../Health-Connect/frontend/public/images', fileName);
+      
+      console.log('Moving file to:', targetPath);
+      
+      // Ensure directory exists
+      const targetDir = path.dirname(targetPath);
+      if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir, { recursive: true });
+      }
+      
+      // Move file from temp location to target
+      fs.renameSync(req.file.path, targetPath);
+      
+      console.log('File moved successfully');
+      
+      res.json({ 
+        message: "File uploaded successfully",
+        path: `/images/${fileName}`
+      });
+    } catch (err) {
+      console.error('Upload error:', err);
+      res.status(500).json({ message: "Upload failed: " + (err as Error).message });
+    }
+  });
+
+  // === MEDICINE REQUEST ROUTES ===
+  app.post("/api/medicine-requests", async (req, res) => {
+    try {
+      const input = req.body;
       const request = await storage.createMedicineRequest(input);
       res.status(201).json(request);
     } catch (err) {
@@ -294,7 +366,7 @@ export async function registerRoutes(
     }
   });
 
-  app.get(api.medicineRequests.list.path, async (req, res) => {
+  app.get("/api/medicine-requests", async (req, res) => {
     if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -302,7 +374,7 @@ export async function registerRoutes(
     res.json(requests);
   });
 
-  app.patch(api.medicineRequests.updateStatus.path, async (req, res) => {
+  app.patch("/api/medicine-requests/:id/status", async (req, res) => {
     if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -365,6 +437,36 @@ export async function registerRoutes(
         image: "/images/dr_suresh.png"
       });
       console.log("Seeded Dr. Suresh Thaker");
+    }
+
+    // Seed Pharmacy data
+    const existingPharmacy = await storage.getPharmacies();
+    if (existingPharmacy.length === 0) {
+      await storage.createPharmacy({
+        name: "City Medical Pharmacy",
+        location: "Near Hospital Gate, Jamnagar",
+        contact: "+91 288-2561234",
+        description: "24/7 pharmacy service with all medicines available",
+        image: "/images/pharmacy-city-medical.jpg"
+      });
+      
+      await storage.createPharmacy({
+        name: "SVH Hospital Pharmacy",
+        location: "Inside Hospital Building, Ground Floor",
+        contact: "+91 288-2510017",
+        description: "In-house pharmacy with immediate medicine availability",
+        image: "/images/pharmacy-svh-hospital.jpg"
+      });
+      
+      await storage.createPharmacy({
+        name: "MediCare Plus",
+        location: "Main Road, Jamnagar",
+        contact: "+91 288-2578912",
+        description: "Complete medical store with surgical supplies",
+        image: "/images/pharmacy-medicare-plus.jpg"
+      });
+      
+      console.log("Seeded pharmacy data");
     }
   }
 

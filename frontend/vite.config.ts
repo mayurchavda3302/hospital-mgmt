@@ -36,6 +36,10 @@ export default defineConfig({
         target: "http://localhost:5000",
         changeOrigin: true,
       },
+      "/images": {
+        target: "http://localhost:5000",
+        changeOrigin: true,
+      },
     },
     // fs: {  // Removed restrictive fs deny for now to allow flexible access if needed during restructure debug, or can keep it but ensure it allows needed paths which it should by default in dev
     //   strict: true,

@@ -80,7 +80,7 @@ export default function Home() {
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white/50">
                 {/* Doctor team image */}
                 <img
-                  src="https://images.unsplash.com/photo-1638202993928-7267aad84c31?w=800&q=80"
+                  src="/images/medical-team.jpg"
                   alt="Medical Team"
                   className="w-full object-cover h-[500px]"
                 />
@@ -186,7 +186,7 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="py-24 bg-primary relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+        <div className="absolute inset-0 bg-[url('/patterns/cubes.png')] opacity-10"></div>
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-6">Need a Doctor for Check-up?</h2>
           <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">

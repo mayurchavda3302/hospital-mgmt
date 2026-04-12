@@ -70,9 +70,7 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  if (process.env.NODE_ENV === "production") {
-    serveStatic(app);
-  }
+  serveStatic(app);
 
 
   const port = parseInt(process.env.PORT || "5000", 10);
