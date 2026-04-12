@@ -41,6 +41,7 @@ export interface IStorage {
   createPharmacy(pharmacy: InsertPharmacy): Promise<Pharmacy>;
   getPharmacies(): Promise<Pharmacy[]>;
   getPharmacy(id: number): Promise<Pharmacy | undefined>;
+  deletePharmacy(id: number): Promise<void>;
 
   // Medicine
   createMedicine(medicine: InsertMedicine): Promise<Medicine>;
@@ -158,6 +159,10 @@ export class PostgresStorage implements IStorage {
   async getPharmacy(id: number): Promise<Pharmacy | undefined> {
     const [pharmacy] = await db.select().from(pharmacies).where(eq(pharmacies.id, id));
     return pharmacy;
+  }
+
+  async deletePharmacy(id: number): Promise<void> {
+    await db.delete(pharmacies).where(eq(pharmacies.id, id));
   }
 
   // Medicine
@@ -305,6 +310,10 @@ export class SqliteStorage implements IStorage {
   async getPharmacy(id: number): Promise<Pharmacy | undefined> {
     const [pharmacy] = await dbSqlite.select().from(schemaSqlite.pharmacies).where(eq(schemaSqlite.pharmacies.id, id));
     return pharmacy as Pharmacy;
+  }
+
+  async deletePharmacy(id: number): Promise<void> {
+    await dbSqlite.delete(schemaSqlite.pharmacies).where(eq(schemaSqlite.pharmacies.id, id));
   }
 
   // Medicine
