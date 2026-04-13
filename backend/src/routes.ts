@@ -236,6 +236,20 @@ export async function registerRoutes(
     res.json(pharmacies);
   });
 
+  // Public endpoint for getting single pharmacy
+  app.get("/api/pharmacies/:id", async (req, res) => {
+    try {
+      const pharmacy = await storage.getPharmacy(Number(req.params.id));
+      if (!pharmacy) {
+        return res.status(404).json({ message: "Pharmacy not found" });
+      }
+      res.json(pharmacy);
+    } catch (err) {
+      console.error("Error getting pharmacy:", err);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.post("/api/pharmacies", async (req, res) => {
     if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
       return res.status(401).json({ message: "Unauthorized" });
@@ -276,7 +290,19 @@ export async function registerRoutes(
   });
 
   // === MEDICINE ROUTES ===
+  // Public endpoint for getting medicines by pharmacy
   app.get("/api/pharmacies/:id/medicines", async (req, res) => {
+    try {
+      const medicines = await storage.getMedicines(Number(req.params.id));
+      res.json(medicines);
+    } catch (err) {
+      console.error("Error getting medicines:", err);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Admin-only endpoint for medicine management
+  app.get("/api/admin/pharmacies/:id/medicines", async (req, res) => {
     if (!req.isAuthenticated() || (req.user as any).role !== "admin") {
       return res.status(401).json({ message: "Unauthorized" });
     }

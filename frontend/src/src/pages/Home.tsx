@@ -152,9 +152,6 @@ export default function Home() {
                 </div>
                 <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors">{dept.title}</h3>
                 <p className="text-sm text-slate-500 mb-4">{dept.desc}</p>
-                <span className="text-xs font-semibold text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
-                  Learn More <ArrowRight className="h-3 w-3" />
-                </span>
               </div>
             ))}
           </div>
